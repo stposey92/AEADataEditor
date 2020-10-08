@@ -1,12 +1,6 @@
-# [MC number] [Manuscript Title] Validation and Replication results
+#  Do Job Networks Disadvantage Women? Evidence from a Recruitment Experiment in Malawi Validation and Replication results
 
-> INSTRUCTIONS: Once you've read these instructions, DELETE THESE AND SIMILAR LINES.
-> In the above title, replace [Manuscript Title] with the actual title of the paper, and [MC number] with the Manuscript Central number (e.g., AEJPol-2017-0097)
-> Go through the steps to download and attempt a replication. Document your steps here, the errors generated, and the steps you took to alleviate those errors.
 
-> Some useful links:
-> - [Official Data and Code Availability Policy](https://www.aeaweb.org/journals/policies/data-code)
-> - [Unofficial Verification Guidance](https://social-science-data-editors.github.io/guidance/Verification_guidance.html) for additional tips and criteria.
 
 SUMMARY
 -------
@@ -20,7 +14,9 @@ Data description
 
 ### Data Sources
 
-> INSTRUCTIONS: Identify all INPUT data sources. Create a list (and commit the list together with this report) (not needed if filling out the "Data Citation and Information report"). For each data source, list in THIS document presence or absence of source, codebook/information on the data, and summary statistics. Summary statistics and codebook may not be necessary if they are available for public use data. In all cases, if the author of the article points to an online location for such information, that is OK. Check for data citation. IN THIS DOCUMENT, point out only a summary of shortcomings.
+This experiment was an RCT and all data were collected primarily from the authors and IPA. 
+[All data was made publicly availabe by the authors here](https://www.journals.uchicago.edu/doi/suppl/10.1086/693869)
+[There is also a file in the repository](Recruitment_ReplicationData.dta)
 
 #### Example data
 
@@ -30,15 +26,16 @@ Data description
 
 ### Analysis Data Files
 
-> INSTRUCTIONS: Separately, identify any analysis data file provided. Analysis data files are produced by code in the deposit from data sources. Not every deposit will have these.
+
 
 - [ ] No analysis data file mentioned
 - [ ] Analysis data files mentioned, not provided (explain reasons below)
-- [ ] Analysis data files mentioned, provided. File names listed below.
+- [X] Analysis data files mentioned, provided. File names listed below.
 
-> INSTRUCTIONS: List all provided filenames here. For large deposits, this can be done using the "Git Bash" program:
-> > find . -name \*.dta
-> will list all Stata datasets. Replace `dta` with `.Rdata` or any other extension to find other datafiles.
+
+```{bash}
+find . -name \*.dta
+```
 
 Example:
 
@@ -49,109 +46,37 @@ Example:
 ./Output_Empirical/data/census_shp/state_db.dta
 ```
 
-Data deposit
-------------
 
-> INSTRUCTIONS: Most deposits will be at openICPSR, but all need to be checked for complete metadata. Detailed guidance is at [https://aeadataeditor.github.io/aea-de-guidance/data-deposit-aea-guidance.html](https://aeadataeditor.github.io/aea-de-guidance/data-deposit-aea-guidance.html). 
-
-### Requirements 
-
-> INSTRUCTIONS: Check that these requirements are met. 
-
-- [ ] README is in TXT, MD, PDF format
-- [ ] openICPSR deposit has no ZIP files
-- [ ] Title conforms to guidance (starts with "Data and Code for:" or "Code for:", is properly capitalized)
-- [ ] Authors (with affiliations) are listed in the same order as on the paper
-
-> INSTRUCTIONS: If any of the above are NOT checked, leave the related [REQUIRED] element here. Otherwise, delete the line.
-
-> [REQUIRED] Please ensure that a ASCII (txt), Markdown (md), or PDF version of the README are available in the data and code deposit.
-
-> [REQUIRED] openICPSR should not have ZIP files visible. ZIP files should be uploaded to openICPSR via "Import from ZIP" instead of "Upload Files". Please delete the ZIP files, and re-upload using the "Import from ZIP" function.
-
-> [REQUIRED] Please review the title of the openICPSR deposit as per our guidelines (below).
-
-> [REQUIRED] Please review authors and affiliations on the openICPSR deposit. In general, they are the same, and in the same order, as for the manuscript; however, authors can deviate from that order.
-
-
-### Deposit Metadata
-
-> INSTRUCTIONS: Some of these are specific to openICPSR (JEL, Manuscript Number). Others may or may not be present at other trusted repositories (Dataverse, Zenodo, etc.). Verify all items for openICPSR, check with supervisor for other deposits.
-
-- [ ] JEL Classification (required)
-- [ ] Manuscript Number (required)
-- [ ] Subject Terms (highly recommended)
-- [ ] Geographic coverage (highly recommended)
-- [ ] Time period(s) (highly recommended)
-- [ ] Collection date(s) (suggested)
-- [ ] Universe (suggested)
-- [ ] Data Type(s) (suggested)
-- [ ] Data Source (suggested)
-- [ ] Units of Observation (suggested)
-
-> INSTRUCTIONS: Go through the checklist above, and then choose ONE of the following results:
-
-- [NOTE] openICPSR metadata is sufficient.
-
-or
-
-- [REQUIRED] Please update the openICPSR metadata fields marked as (required), in order to improve findability of your data and code supplement. 
-
-and/or
-
-- [SUGGESTED] We suggest you update the openICPSR metadata fields marked as (suggested), in order to improve findability of your data and code supplement. 
-
-For additional guidance, see [https://aeadataeditor.github.io/aea-de-guidance/data-deposit-aea-guidance.html](https://aeadataeditor.github.io/aea-de-guidance/data-deposit-aea-guidance.html).
 
 Data checks
 -----------
 
-> INSTRUCTIONS: When data are present, run checks:
-> - can data be read (using software indicated by author)?
-> - Is data in archive-ready formats (CSV, TXT) or in custom formats (DTA, SAS7BDAT, Rdata)? Note: Numbers and Mathematica data files are not considered archive-safe and cannot be accepted. 
-> - Does the data have variable labels (Stata: run `describe using (name of DTA)` and check that there is content in the column "variable label")?
-> - Run check for PII ([PII_stata_scan.do](PII_stata_scan.do), sourced from [here](https://github.com/J-PAL/stata_PII_scan) if using Stata) and report results. Note: this check will have lots of false positives - fields it thinks might be sensitive that are not, in fact, sensitive. Apply judgement.
+
+> Problem (Keep getting error from PII scan)
 
 
 Code description
 ----------------
-> INSTRUCTIONS: Review the code (but do not run it yet). Identify programs that create "analysis files" ("data preparation code"). Identify programs that create tables and figures. Not every deposit will have separate programs for this.
 
-> INSTRUCTIONS: Identify all **Figure, Table, and any in-text numbers**. Create a list, mapping each of them to a particular program and line number within the program (use [this template](code-check-TEMPLATE.xlsx)). Commit that list. You will come back to the list in your findings. IN THIS SECTION, point out only a summary description, including of shortcomings. E.g.
+[List of tables and figures](code-check.xlsx)
+>There are 7 total tables, all tables are presented in a csv format. Therea are 8 total figures, all of them are in pdf format. All tables and figures are created within the do-file, the do-file creates 2 directories "tables" and "graphs" where the outputs are stored respectively.
 
-There are four provided Stata do files, three Matlab .m files, including a "master.do".
 
-- Table 5: could not identify code that produces Table 5
-- Neither the program codes, nor the README, identify which tables are produced by what program.
-
-> NOTE: In-text numbers that reference numbers in tables do not need to be listed. Only in-text numbers that correspond to no table or figure need to be listed.
 
 Stated Requirements
 ---------------------
 
-> INSTRUCTIONS: The authors may have specified specific requirements in terms of software, computer hardware, etc. Please list them here. This is **different** from the Computing Environment of the Replicator. You have the option to amend these with unstated requirements later. If all requirements are listed, check the box "Requirements are complete".
 
-- [ ] No requirements specified
-- [ ] Software Requirements specified as follows:
-  - Software 1
-  - Software 2
-- [ ] Computational Requirements specified as follows:
-  - Cluster size, etc.
-- [ ] Time Requirements specified as follows:
-  - Length of necessary computation (hours, weeks, etc.)
 
-- [ ] Requirements are complete.
-
-> If easier, simply copy-and-paste the authors' stated requirements here:
+>No requirements were specified by the author, however the data and data analysis files need stata to run.
 
 
 Actual Requirements, if different
 ---------------------------------
 
-> INSTRUCTIONS: If it turns out that some requirements were not stated/ are incomplete (software, packages, operating system), please list the *complete* list of requirements here. If the stated requirements are complete, delete this section, including the requirement at the end.
 
-- [ ] Software Requirements 
-  - [ ] Stata
+- [X] Software Requirements 
+  - [X] Stata
     - Packages go here
   - [ ] Matlab
   - [ ] R
@@ -160,7 +85,7 @@ Actual Requirements, if different
 - [ ] Computational Requirements specified as follows:
   - Cluster size, etc.
 - [ ] Time Requirements 
-  - Length of necessary computation (hours, weeks, etc.)
+  - Approximately 2 minutes
 
 > [REQUIRED] Please amend README to contain complete requirements. 
 
@@ -169,116 +94,108 @@ You can copy the section above, amended if necessary.
 Computing Environment of the Replicator
 ---------------------
 
-> INSTRUCTIONS: This might be automated, for now, please fill in manually. Remove examples that are not relevant, adjust examples to fit special circumstances. Some of this is available from the standard log output in Stata or R. Some frequently used details are below. Some of these details can be found as follows:
->
-> - (Windows) by right-clicking on "This PC"
-> - (Mac) Apple-menu > "About this Mac"
-> - (Linux) see code in `tools/linux-system-info.sh`
 
-- Mac Laptop, MacOS 10.14.6, 8 GB of memory
-- CISER Shared Windows Server 2019, 256GB, Intel Xeon E5-4669 v3 @ 2.10Ghz (3 processors)
-- CISER Virtual Windows Server 2016, 16GB, Intel Haswell 2.19 Ghz (2 processors)
-- BioHPC Linux server, Centos 7.6, 64 cores; 1024GB RAM; 
+- Windows Desktop, Windows 10, 24 GB of memory, Intel i5-8600k @ 3.6GHZ
 
-> INSTRUCTIONS: Please also list the software you used (specific versions). List only the ones you used, add any not listed in the examples:
 
-- Stata/MP 16.1
-- Matlab R2019a
-- Intel Compiler 3.14152
+
+- Stata/MP 14.2
+
 
 Replication steps
 -----------------
 
-> INSTRUCTIONS: provide details about your process of accessing the code and data.
-> Do NOT detail things like "I save them on my Desktop".
-> DO describe actions   that you did  as per instructions ("I added a config.do")
-> DO describe any other actions you needed to do ("I had to make changes in multiple programs"), without going into detail (the commit log can provide that information)
-
 Example:
 
-1. Downloaded code from URL provided.
-2. Downloaded data from URL indicated in the README. A sign-up was required (not indicated in README)
-3. Added the config.do generating system information, but commented out log creation, as author already creates log files.
-4. Ran code as per README, but the third step did not work.
-5. Made changes to the way the third step is run to get it to work.
+1. Download the following data and data analysis files. [Data](Recruitment_ReplicationData) [Data Analysis File](bkm_malawi_jole_replication)
+2. Download the data and do file in the same directory and run the do file to replicate the study.
+3. I added a config.do to track log files for the replication
+4. I added code that makes directories in the same directory for the outputs of graphs and tables
+5. I added code to install the estout package required to create the tables in csv
+6. I have scanned the data for Personal Information Identifiers, none were found
+7. I created a READ ME file that reads as these steps do
+8. I uploaded this replication within a github repository
 
 Findings
 --------
 
-> INSTRUCTIONS: Describe your findings both positive and negative in some detail, for each **Data Preparation Code, Figure, Table, and any in-text numbers**. You can re-use the Excel file created under *Code Description*. When errors happen, be as precise as possible. For differences in figures, provide both a screenshot of what the manuscript contains, as well as the figure produced by the code you ran. For differences in numbers, provide both the number as reported in the manuscript, as well as the number replicated. If too many numbers, contact your supervisor.
 
 ### Data Preparation Code
 
 Examples:
 
-- Program `1-create-data.do` ran without error, output expected data
-- Program `2-create-appendix-data.do` failed to produce any output.
+- The do file originally required the replicator to input a directory first.
+- The updated do file will run completely if the data file and do file are in the same directory
+- The original do file required the replicator to create separately two output sources titled "tables" and "graphs". 
+-The updated do file creates these automatically within the directory without the need for the replicator to create new folders.
 
 ### Tables
 
 Examples:
 
-- Table 1: Looks the same
-- Table 2: (contains no data)
-- Table 3: Minor differences in row 5, column 3, 0.003 instead of 0.3
+- Table 1: The CA is changed to OP in all tables, other than that all values are equal
+- Table 2: All values are the same
+- Table 3: All values are the same
+- Table 4: All values are the same
+- Table 5: All values are the same
+- Table 6: All values are the same
+- Table 1A: All values are the same
 
 ### Figures
 
-> INSTRUCTIONS: Please provide a comparison with the paper when describing that figures look different. Use a screenshot for the paper, and the graph generated by the programs for the comparison. Reference the graph generated by the programs as a local file within the repository.
 
 Example:
 
 - Figure 1: Looks the same
-- Figure 2: no program provided
-- Figure 3: Paper version looks different from the one generated by programs:
+- Figure 2: There is no Figure 2 in the replication code
+- Figure 3: Looks the same
+- Figure 4: Looks the same
+- Figure 5: There is no Figure 5 in the replication code
+- Figure 6: Looks the same
+- Figure 7: Looks the same
+- Figure A1: Looks the same
+- Figure A2: Looks the same
+- Figure A3: Looks the same
 
 Paper version:
-![Paper version](template/dog.jpg)
+![Paper Figure 1](./Data/Paper_Figures/Fig1.png)
+![Paper Figure 2](./Data/Paper_Figures/Fig2.png)
+![Paper Figure 3](./Data/Paper_Figures/Fig3.png)
+![Paper Figure 4](./Data/Paper_Figures/Fig4.png)
+![Paper Figure 5](./Data/Paper_Figures/Fig5.png)
+![Paper Figure 6](./Data/Paper_Figures/Fig6.png)
+![Paper Figure A1](./Data/Paper_Figures/FigA1.png)
+![Paper Figure A2](./Data/Paper_Figures/FigA2.png)
+![Paper Figure A3](./Data/Paper_Figures/FigA3.png)
 
-Figure 3 generated by programs:
+Figure 1 generated by programs:
 
-![Replicated version](template/odie.jpg)
+![Replicated version](./Data/graphs/fig1_CA_ability_by_gender.png)
+![Replicated version](./Data/graphs/fig1_CA_ability_by_gender.png)
+![Replicated version](./Data/graphs/fig3_gender_choice_in_referrals_by_CA_performance.png)
+![Replicated version](./Data/graphs/fig4_mens_fixedfee_referrals.png)
+![Replicated version](./Data/graphs/fig6_referral_qualification_rate_by_CA_performance.png)
+![Replicated version](./Data/graphs/fig7_womens_fixedfee_referrals.png)
+![Replicated version](./Data/graphs/figA1_gender_bysession.png)
+![Replicated version](./Data/graphs/figA2_performance_bysession.png)
+![Replicated version](./Data/graphs/figA3_referral_qualifies_by_female_CA_performance.png)
 
 ### In-Text Numbers
 
-> INSTRUCTIONS: list page and line number of in-text numbers. If ambiguous, cite the surrounding text, i.e., "the rate fell to 52% of all jobs: verified".
+There are no in-text numbers, or all in-text numbers stem from tables and figures.
 
-[ ] There are no in-text numbers, or all in-text numbers stem from tables and figures.
 
-[ ] There are in-text numbers, but they are not identified in the code
-
-- Page 21, line 5: Same
 
 
 Classification
 --------------
 
-> INSTRUCTIONS: Make an assessment here.
->
-> Full reproduction can include a small number of apparently insignificant changes in the numbers in the table. Full reproduction also applies when changes to the programs needed to be made, but were successfully implemented.
->
-> Partial reproduction means that a significant number (>25%) of programs and/or numbers are different.
->
-> Note that if any data is confidential and not available, then a partial reproduction applies. This should be noted in the Reasons
->
-> Note that when all data is confidential, it is unlikely that this exercise should have been attempted.
->
-> Failure to reproduce: only a small number of programs ran successfully, or only a small number of numbers were successfully generated (<25%)
 
-- [ ] full reproduction
+> Full reproduction can include a small number of apparently insignificant changes in the numbers in the table. Full reproduction also applies when changes to the programs needed to be made, but were successfully implemented.
+
+
+- [X] full reproduction
 - [ ] full reproduction with minor issues
 - [ ] partial reproduction (see above)
 - [ ] not able to reproduce most or all of the results (reasons see above)
 
-### Reason for incomplete reproducibility
-
-> INSTRUCTIONS: mark the reasons here why full reproduciblity was not achieved, and enter this information in JIRA
-
-- [ ] `Discrepancy in output` (either figures or numbers in tables or text differ)
-- [ ] `Bugs in code`  that  were fixable by the replicator (but should be fixed in the final deposit)
-- [ ] `Code missing`, in particular if it  prevented the replicator from completing the reproducibility check
-- [ ] `Code not functional` is more severe than a simple bug: it  prevented the replicator from completing the reproducibility check
-- [ ] `Software not available to replicator`  may happen for a variety of reasons, but in particular (a) when the software is commercial, and the replicator does not have access to a licensed copy, or (b) the software is open-source, but a specific version required to conduct the reproducibility check is not available.
-- [ ] `Insufficient time available to replicator` is applicable when (a) running the code would take weeks or more (b) running the code might take less time if sufficient compute resources were to be brought to bear, but no such resources can be accessed in a timely fashion (c) the replication package is very complex, and following all (manual and scripted) steps would take too long.
-- [ ] `Data missing` is marked when data *should* be available, but was erroneously not provided, or is not accessible via the procedures described in the replication package
-- [ ] `Data not available` is marked when data requires additional access steps, for instance purchase or application procedure. 
