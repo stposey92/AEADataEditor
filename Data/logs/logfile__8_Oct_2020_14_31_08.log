@@ -1,0 +1,1094 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_31_08.log
+  log type:  text
+ opened on:   8 Oct 2020, 14:31:08
+
+. 
+. /* It will provide some info about how and when the program was run */
+. /* See https://www.stata.com/manuals13/pcreturn.pdf#pcreturn */
+. local variant = cond(c(MP),"MP",cond(c(SE),"SE",c(flavor)) )  
+
+. // alternatively, you could use 
+. // local variant = cond(c(stata_version)>13,c(real_flavor),"NA")  
+. 
+. di "=== SYSTEM DIAGNOSTICS ==="
+=== SYSTEM DIAGNOSTICS ===
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 14.2
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Dec 2017
+
+. di "Variant:       `variant'"
+Variant:       SE
+
+. di "Processors:    `c(processors)'"
+Processors:    1
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. di "=========================="
+==========================
+
+. 
+. 
+. /* install any packages locally */
+. capture mkdir "$rootdir/ado"
+
+. sysdir set PERSONAL "$rootdir/ado/personal"
+
+. sysdir set PLUS     "$rootdir/ado/plus"
+
+. sysdir set SITE     "$rootdir/ado/site"
+
+. sysdir
+   STATA:  C:\Program Files (x86)\Stata14\
+    BASE:  C:\Program Files (x86)\Stata14\ado\base\
+    SITE:  C:\Users\Public\Replication\Replication\Data/ado/site\
+    PLUS:  C:\Users\Public\Replication\Replication\Data/ado/plus\
+PERSONAL:  C:\Users\Public\Replication\Replication\Data/ado/personal\
+OLDPLACE:  c:\ado\
+
+. 
+. /* add packages to the macro */
+. 
+. * *** Add required packages from SSC to this list ***
+.     local ssc_packages ""
+
+.     // local ssc_packages "estout boottest"
+.     
+.     if !missing("`ssc_packages'") {
+.         foreach pkg in `ssc_packages' {
+  2.             dis "Installing `pkg'"
+  3.             ssc install `pkg', replace
+  4.         }
+.     }
+
+. 
+.     * Install packages using net
+.     *  net install yaml, from("https://raw.githubusercontent.com/gslab-econ/stata-misc/master/")
+. net install estout, from( http://fmwww.bc.edu/RePEc/bocode/e/)
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. /* other commands */
+. 
+. /* after installing all packages, it may be necessary to issue the mata mlib index command */
+.         mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmatafc;lmatagsem;lmatamcmc;lmataopt;lmatapath;lmatapostest;lmatapss;lmatasem
+
+. 
+. 
+. set more off
+
+. 
+. clear
+
+. set mem 500m
+set memory ignored.
+    Memory no longer needs to be set in modern Statas; memory adjustments are performed on the fly automatically.
+
+. set more off
+
+. set matsize 800
+
+. 
+. #delimit;
+delimiter now ;
+. use Recruitment_ReplicationData.dta;
+
+. tab location, gen(l);
+
+   Location |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        641       77.60       77.60
+          2 |        185       22.40      100.00
+------------+-----------------------------------
+      Total |        826      100.00
+
+. gen lweek = l2*OP_week;
+
+. egen OP_age10 = cut(OP_agegrp), at(10 20 30 40 50);
+(61 missing values generated)
+
+. replace OP_age10 = 60 if OP_age10==.;
+(61 real changes made)
+
+. global controls= "i.OP_date";
+
+. bys OP_date: egen frac_female = mean(OP_female);
+
+. gen OP_bias = OP_male_ra_score-OP_female_ra_score;
+(88 missing values generated)
+
+. egen OP_bias_group = cut(OP_bias), at(-10 0 1 2 3 10) icodes;
+(88 missing values generated)
+
+. for var frac_female OP_bias OP_bias_group: gen perf_X = treat_perf*X;
+
+->  gen perf_frac_female = treat_perf*frac_female
+
+->  gen perf_OP_bias = treat_perf*OP_bias
+(88 missing values generated)
+
+->  gen perf_OP_bias_group = treat_perf*OP_bias_group
+(88 missing values generated)
+
+. eststo clear;
+
+. *********************************************************************************;
+. ******** Table 1: Gender Distributions of OP and Referrals *********;
+. *********************************************************************************;
+. ge REF_malequalify= (1-REF_female)*REF_alt_nofeedback_qual;
+(150 missing values generated)
+
+. ge REF_femqualify= REF_alt_nofeedback_qual*REF_female;
+(150 missing values generated)
+
+. ** Panel A **;
+. *first row blank;
+. local r1c1="A. OP Characteristics";
+
+.  local r1c2="";
+
+.  local r1c3="";
+
+.  local r1c4="";
+
+.  local r1c5="";
+
+. #delimit;
+delimiter now ;
+. *fraction of ops;
+. local r2c1="Fraction of OPs";
+
+. local r2c2 1;
+
+. *sum OP_female if  !missing(OP_qualify);
+. sum OP_female  ;
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   OP_female |        816     .379902    .4856599          0          1
+
+. local r2c4=r(mean);
+
+. local r2c3=`r2c2'-`r2c4';
+
+. local r2c5="";
+
+. *op is qualified;
+. local r3c1="OP is Qualified";
+
+. sum OP_alt_nofeedback_qual if  !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+OP_alt_nof~l |        815    .5300613     .499402          0          1
+
+. local r3c2=r(mean);
+
+. reg OP_alt_nofeedback_qual OP_female ;
+
+      Source |       SS           df       MS      Number of obs   =       815
+-------------+----------------------------------   F(1, 813)       =      2.91
+       Model |  .724434932         1  .724434932   Prob > F        =    0.0883
+    Residual |  202.289062       813  .248818034   R-squared       =    0.0036
+-------------+----------------------------------   Adj R-squared   =    0.0023
+       Total |  203.013497       814   .24940233   Root MSE        =    .49882
+
+------------------------------------------------------------------------------
+OP_alt_nof~l |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.0614503   .0360135    -1.71   0.088    -.1321407    .0092401
+       _cons |   .5533597   .0221751    24.95   0.000     .5098325    .5968869
+------------------------------------------------------------------------------
+
+. local r3c3=_b[_cons];
+
+. local r3c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   813) =    2.91
+            Prob > F =    0.0883
+
+. local r3c5=r(p);
+
+. *n;
+. local r4c1="N";
+
+. count if !missing(OP_qualify) & !missing(OP_female);
+  816
+
+. local r4c2=r(N);
+
+. count if  !missing(OP_qualify) & OP_female==0;
+  506
+
+. local r4c3=r(N);
+
+. count if  !missing(OP_qualify) & OP_female==1;
+  310
+
+. local r4c4=r(N);
+
+. local r4c5="";
+
+. ** Panel B **;
+. *first row blank;
+. local r5c1="B. OP Characteristics: Either Gender Treatments";
+
+.  local r5c2="";
+
+.  local r5c3="";
+
+.  local r5c4="";
+
+.  local r5c5="";
+
+. *fraction of ops;
+. local r6c1="Fraction of OPs";
+
+. local r6c2 1;
+
+. sum OP_female if OP_treatment_gender==3 ;
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   OP_female |        266    .4022556    .4912773          0          1
+
+. local r6c4=r(mean);
+
+. local r6c3=`r6c2'-`r6c4';
+
+. local r6c5="";
+
+. *op is qualified;
+. local r7c1="OP is Qualified";
+
+. sum OP_alt_nofeedback_qual if OP_treatment_gender==3 & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+OP_alt_nof~l |        266    .5676692    .4963336          0          1
+
+. local r7c2=r(mean);
+
+. reg OP_alt_nofeedback_qual OP_female if OP_treatment_gender==3 ;
+
+      Source |       SS           df       MS      Number of obs   =       266
+-------------+----------------------------------   F(1, 264)       =      2.10
+       Model |  .515247076         1  .515247076   Prob > F        =    0.1485
+    Residual |  64.7667078       264  .245328439   R-squared       =    0.0079
+-------------+----------------------------------   Adj R-squared   =    0.0041
+       Total |  65.2819549       265     .246347   Root MSE        =    .49531
+
+------------------------------------------------------------------------------
+OP_alt_nof~l |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.0897549   .0619333    -1.45   0.148     -.211701    .0321912
+       _cons |   .6037736   .0392804    15.37   0.000     .5264309    .6811162
+------------------------------------------------------------------------------
+
+. local r7c3=_b[_cons];
+
+. local r7c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   264) =    2.10
+            Prob > F =    0.1485
+
+. local r7c5=r(p);
+
+. *n;
+. local r8c1="N";
+
+. count if OP_treatment_gender==3 & !missing(OP_qualify) & !missing(OP_female);
+  266
+
+. local r8c2=r(N);
+
+. count if OP_treatment_gender==3  & !missing(OP_qualify) & OP_female==0;
+  159
+
+. local r8c3=r(N);
+
+. count if OP_treatment_gender==3 & !missing(OP_qualify) & OP_female==1;
+  107
+
+. local r8c4=r(N);
+
+. local r8c5="";
+
+. ** Panel C **;
+. *fifth row blank;
+. local r9c1="C. Referral Characteristics: Either Gender Treatments";
+
+.  local r9c2="";
+
+.  local r9c3="";
+
+.  local r9c4="";
+
+.  local r9c5="";
+
+. *referral is female;
+. local r10c1="Referral is Female";
+
+. sum REF_female if OP_treatment_gender==3   & !missing(REF_qualify)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  REF_female |        220    .3045455    .4612642          0          1
+
+. local r10c2=r(mean);
+
+. *reg REF_female OP_female if OP_treatment_gender==3 & !missing(REF_qualify);
+. reg REF_female OP_female if OP_treatment_gender==3 & !missing(REF_qualify)  & !missing(OP_female) ;
+
+      Source |       SS           df       MS      Number of obs   =       220
+-------------+----------------------------------   F(1, 218)       =     10.28
+       Model |  2.09800402         1  2.09800402   Prob > F        =    0.0015
+    Residual |  44.4974505       218  .204116746   R-squared       =    0.0450
+-------------+----------------------------------   Adj R-squared   =    0.0406
+       Total |  46.5954545       219  .212764633   Root MSE        =    .45179
+
+------------------------------------------------------------------------------
+  REF_female |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .1997234   .0622967     3.21   0.002     .0769425    .3225044
+       _cons |   .2255639   .0391754     5.76   0.000     .1483529    .3027749
+------------------------------------------------------------------------------
+
+. local r10c3=_b[_cons];
+
+. local r10c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   218) =   10.28
+            Prob > F =    0.0015
+
+. local r10c5=r(p);
+
+. *referral is qualified;
+. local r11c1="Referral is Qualified";
+
+. sum REF_alt_nofeedback_qual if OP_treatment_gender==3  & !missing(REF_female)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_alt_no~l |        220    .4863636    .5009538          0          1
+
+. local r11c2=r(mean);
+
+. reg REF_alt_nofeedback_qual OP_female if OP_treatment_gender==3  & !missing(REF_female);
+
+      Source |       SS           df       MS      Number of obs   =       220
+-------------+----------------------------------   F(1, 218)       =      2.15
+       Model |  .536828356         1  .536828356   Prob > F        =    0.1440
+    Residual |  54.4222626       218  .249643406   R-squared       =    0.0098
+-------------+----------------------------------   Adj R-squared   =    0.0052
+       Total |  54.9590909       219  .250954753   Root MSE        =    .49964
+
+------------------------------------------------------------------------------
+REF_alt_no~l |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.1010284   .0688947    -1.47   0.144    -.2368134    .0347566
+       _cons |   .5263158   .0433246    12.15   0.000     .4409272    .6117044
+------------------------------------------------------------------------------
+
+. local r11c3=_b[_cons];
+
+. local r11c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   218) =    2.15
+            Prob > F =    0.1440
+
+. local r11c5=r(p);
+
+. *referral is qualified male;
+. local r12c1="Referral is Qualified Male";
+
+. sum REF_malequalify if OP_treatment_gender==3 & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_malequ~y |        220         .35    .4780573          0          1
+
+. local r12c2=r(mean);
+
+. reg REF_malequalify OP_female if OP_treatment_gender==3 ;
+
+      Source |       SS           df       MS      Number of obs   =       220
+-------------+----------------------------------   F(1, 218)       =      7.66
+       Model |  1.69791289         1  1.69791289   Prob > F        =    0.0061
+    Residual |  48.3520871       218  .221798565   R-squared       =    0.0339
+-------------+----------------------------------   Adj R-squared   =    0.0295
+       Total |       50.05       219  .228538813   Root MSE        =    .47095
+
+------------------------------------------------------------------------------
+REF_malequ~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.1796733   .0649389    -2.77   0.006    -.3076619   -.0516848
+       _cons |   .4210526    .040837    10.31   0.000     .3405668    .5015385
+------------------------------------------------------------------------------
+
+. local r12c3=_b[_cons];
+
+. local r12c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   218) =    7.66
+            Prob > F =    0.0061
+
+. local r12c5=r(p);
+
+. *referral is qualified female;
+. local r13c1="Referral is Qualified Female";
+
+. sum REF_femqualify if OP_treatment_gender==3  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_femqua~y |        220    .1363636    .3439569          0          1
+
+. local r13c2=r(mean);
+
+. reg REF_femqualify OP_female if OP_treatment_gender==3 ;
+
+      Source |       SS           df       MS      Number of obs   =       220
+-------------+----------------------------------   F(1, 218)       =      2.77
+       Model |  .325303855         1  .325303855   Prob > F        =    0.0974
+    Residual |  25.5837871       218  .117356821   R-squared       =    0.0126
+-------------+----------------------------------   Adj R-squared   =    0.0080
+       Total |  25.9090909       219  .118306351   Root MSE        =    .34257
+
+------------------------------------------------------------------------------
+REF_femqua~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .0786449   .0472368     1.66   0.097    -.0144543    .1717441
+       _cons |   .1052632   .0297049     3.54   0.000     .0467176    .1638087
+------------------------------------------------------------------------------
+
+. local r13c3=_b[_cons];
+
+. local r13c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   218) =    2.77
+            Prob > F =    0.0974
+
+. local r13c5=r(p);
+
+. *n;
+. local r14c1="N";
+
+. count if OP_treatment_gender==3 & !missing(REF_female)&!missing(OP_female);
+  220
+
+. local r14c2=r(N);
+
+. count if OP_treatment_gender==3    & !missing(REF_female)  & OP_female==0;
+  133
+
+. local r14c3=r(N);
+
+. count if OP_treatment_gender==3  & !missing(REF_qualify) & !missing(REF_female)  & OP_female==1;
+  87
+
+. local r14c4=r(N);
+
+. local r14c5="";
+
+. ** Panel D **;
+. *eleventh row blank;
+. local r15c1="D. Referral Characteristics, Fixed Fee Treatments";
+
+.  local r15c2="";
+
+.  local r15c3="";
+
+.  local r15c4="";
+
+.  local r15c5="";
+
+. *referral is female;
+. local r16c1="Referral is Female";
+
+. sum REF_female if OP_treatment_gender==3 & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_qualify)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  REF_female |        133    .3157895    .4665869          0          1
+
+. local r16c2=r(mean);
+
+. reg REF_female OP_female if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_qualify);
+
+      Source |       SS           df       MS      Number of obs   =       133
+-------------+----------------------------------   F(1, 131)       =      5.86
+       Model |   1.2303486         1   1.2303486   Prob > F        =    0.0169
+    Residual |  27.5064935       131  .209973233   R-squared       =    0.0428
+-------------+----------------------------------   Adj R-squared   =    0.0355
+       Total |  28.7368421       132  .217703349   Root MSE        =    .45823
+
+------------------------------------------------------------------------------
+  REF_female |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .1948052   .0804764     2.42   0.017     .0356037    .3540067
+       _cons |   .2337662     .05222     4.48   0.000     .1304627    .3370698
+------------------------------------------------------------------------------
+
+. local r16c3=_b[_cons];
+
+. local r16c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   131) =    5.86
+            Prob > F =    0.0169
+
+. local r16c5=r(p);
+
+. *referral is qualified;
+. local r17c1="Referral is Qualified";
+
+. sum REF_alt_nofeedback_qual if OP_treatment_gender==3 & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_female)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_alt_no~l |        133    .4962406    .5018762          0          1
+
+. local r17c2=r(mean);
+
+. reg REF_alt_nofeedback_qual OP_female if OP_treatment_gender==3   & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_female);
+
+      Source |       SS           df       MS      Number of obs   =       133
+-------------+----------------------------------   F(1, 131)       =      2.85
+       Model |  .707535885         1  .707535885   Prob > F        =    0.0938
+    Residual |  32.5405844       131  .248401408   R-squared       =    0.0213
+-------------+----------------------------------   Adj R-squared   =    0.0138
+       Total |  33.2481203       132  .251879699   Root MSE        =     .4984
+
+------------------------------------------------------------------------------
+REF_alt_no~l |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.1477273   .0875313    -1.69   0.094    -.3208851    .0254306
+       _cons |   .5584416   .0567978     9.83   0.000     .4460819    .6708012
+------------------------------------------------------------------------------
+
+. local r17c3=_b[_cons];
+
+. local r17c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   131) =    2.85
+            Prob > F =    0.0938
+
+. local r17c5=r(p);
+
+. *referral is qualified male;
+. local r18c1="Referral is Qualified Male";
+
+. sum REF_malequalify if OP_treatment_gender==3 & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_malequ~y |        133    .3458647    .4774476          0          1
+
+. local r18c2=r(mean);
+
+. reg REF_malequalify OP_female if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2);
+
+      Source |       SS           df       MS      Number of obs   =       133
+-------------+----------------------------------   F(1, 131)       =      5.68
+       Model |  1.25093985         1  1.25093985   Prob > F        =    0.0186
+    Residual |  28.8392857       131  .220147219   R-squared       =    0.0416
+-------------+----------------------------------   Adj R-squared   =    0.0343
+       Total |  30.0902256       132  .227956254   Root MSE        =     .4692
+
+------------------------------------------------------------------------------
+REF_malequ~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.1964286    .082403    -2.38   0.019    -.3594414   -.0334158
+       _cons |   .4285714   .0534701     8.02   0.000     .3227948    .5343481
+------------------------------------------------------------------------------
+
+. local r18c3=_b[_cons];
+
+. local r18c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   131) =    5.68
+            Prob > F =    0.0186
+
+. local r18c5=r(p);
+
+. *referral is qualified female;
+. local r19c1="Referral is Qualified Female";
+
+. sum REF_femqualify if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_femqua~y |        133    .1503759    .3587909          0          1
+
+. local r19c2=r(mean);
+
+. reg REF_femqualify OP_female if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2);
+
+      Source |       SS           df       MS      Number of obs   =       133
+-------------+----------------------------------   F(1, 131)       =      0.60
+       Model |  .076896787         1  .076896787   Prob > F        =    0.4417
+    Residual |  16.9155844       131  .129126599   R-squared       =    0.0045
+-------------+----------------------------------   Adj R-squared   =   -0.0031
+       Total |  16.9924812       132  .128730918   Root MSE        =    .35934
+
+------------------------------------------------------------------------------
+REF_femqua~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .0487013   .0631094     0.77   0.442    -.0761442    .1735468
+       _cons |   .1298701   .0409508     3.17   0.002     .0488597    .2108806
+------------------------------------------------------------------------------
+
+. local r19c3=_b[_cons];
+
+. local r19c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,   131) =    0.60
+            Prob > F =    0.4417
+
+. local r19c5=r(p);
+
+. *n;
+. local r20c1="N";
+
+. count if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_qualify) & !missing(REF_female) & !missing(OP_female);
+  133
+
+. local r20c2=r(N);
+
+. count if OP_treatment_gender==3  & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_qualify) & !missing(REF_female)  & OP_female==0;
+  77
+
+. local r20c3=r(N);
+
+. count if OP_treatment_gender==3 & (OP_treatment_payment==1 | OP_treatment_payment==2) & !missing(REF_qualify) & !missing(REF_female)  & OP_female==1;
+  56
+
+. local r20c4=r(N);
+
+. local r20c5="";
+
+. ** Panel E **;
+. *seventeenth row blank;
+. local r21c1="E. Referral Characteristics, Perf Treatments";
+
+.  local r21c2="";
+
+.  local r21c3="";
+
+.  local r21c4="";
+
+.  local r21c5="";
+
+. *referral is female;
+. local r22c1="Referral is Female";
+
+. sum REF_female if OP_treatment_gender==3 & (OP_treatment_payment==3) & !missing(REF_qualify)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  REF_female |         87    .2873563    .4551526          0          1
+
+. local r22c2=r(mean);
+
+. reg REF_female OP_female if OP_treatment_gender==3  & (OP_treatment_payment==3) & !missing(REF_qualify);
+
+      Source |       SS           df       MS      Number of obs   =        87
+-------------+----------------------------------   F(1, 85)        =      4.20
+       Model |  .839133429         1  .839133429   Prob > F        =    0.0435
+    Residual |  16.9769585        85  .199728924   R-squared       =    0.0471
+-------------+----------------------------------   Adj R-squared   =    0.0359
+       Total |   17.816092        86   .20716386   Root MSE        =    .44691
+
+------------------------------------------------------------------------------
+  REF_female |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .2050691   .1000473     2.05   0.043     .0061483    .4039899
+       _cons |   .2142857   .0597209     3.59   0.001     .0955445    .3330269
+------------------------------------------------------------------------------
+
+. local r22c3=_b[_cons];
+
+. local r22c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,    85) =    4.20
+            Prob > F =    0.0435
+
+. local r22c5=r(p);
+
+. *referral is qualified;
+. local r23c1="Referral is Qualified";
+
+. sum REF_alt_nofeedback_qual if OP_treatment_gender==3 & (OP_treatment_payment==3) & !missing(REF_female)  & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_alt_no~l |         87    .4712644    .5020674          0          1
+
+. local r23c2=r(mean);
+
+. reg REF_alt_nofeedback_qual OP_female if OP_treatment_gender==3 & (OP_treatment_payment==3) & !missing(REF_female);
+
+      Source |       SS           df       MS      Number of obs   =        87
+-------------+----------------------------------   F(1, 85)        =      0.07
+       Model |  .018598708         1  .018598708   Prob > F        =    0.7877
+    Residual |  21.6595622        85  .254818379   R-squared       =    0.0009
+-------------+----------------------------------   Adj R-squared   =   -0.0109
+       Total |  21.6781609        86  .252071639   Root MSE        =     .5048
+
+------------------------------------------------------------------------------
+REF_alt_no~l |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |    -.03053   .1130056    -0.27   0.788    -.2552155    .1941555
+       _cons |   .4821429   .0674561     7.15   0.000      .348022    .6162637
+------------------------------------------------------------------------------
+
+. local r23c3=_b[_cons];
+
+. local r23c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,    85) =    0.07
+            Prob > F =    0.7877
+
+. local r23c5=r(p);
+
+. *referral is qualified male;
+. local r24c1="Referral is Qualified Male";
+
+. sum REF_malequalify if OP_treatment_gender==3  & (OP_treatment_payment==3) & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_malequ~y |         87    .3563218    .4816882          0          1
+
+. local r24c2=r(mean);
+
+. reg REF_malequalify OP_female if OP_treatment_gender==3  & (OP_treatment_payment==3);
+
+      Source |       SS           df       MS      Number of obs   =        87
+-------------+----------------------------------   F(1, 85)        =      2.03
+       Model |  .464967689         1  .464967689   Prob > F        =    0.1581
+    Residual |  19.4890553        85  .229283004   R-squared       =    0.0233
+-------------+----------------------------------   Adj R-squared   =    0.0118
+       Total |   19.954023        86  .232023523   Root MSE        =    .47884
+
+------------------------------------------------------------------------------
+REF_malequ~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |  -.1526498   .1071941    -1.42   0.158    -.3657803    .0604807
+       _cons |   .4107143    .063987     6.42   0.000     .2834909    .5379376
+------------------------------------------------------------------------------
+
+. local r24c3=_b[_cons];
+
+. local r24c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,    85) =    2.03
+            Prob > F =    0.1581
+
+. local r24c5=r(p);
+
+. *referral is qualified female;
+. local r25c1="Referral is Qualified Female";
+
+. sum REF_femqualify if OP_treatment_gender==3& (OP_treatment_payment==3) & !missing(OP_female);
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+REF_femqua~y |         87    .1149425    .3208016          0          1
+
+. local r25c2=r(mean);
+
+. reg REF_femqualify OP_female if OP_treatment_gender==3 & (OP_treatment_payment==3);
+
+      Source |       SS           df       MS      Number of obs   =        87
+-------------+----------------------------------   F(1, 85)        =      2.96
+       Model |  .297579321         1  .297579321   Prob > F        =    0.0891
+    Residual |  8.55299539        85  .100623475   R-squared       =    0.0336
+-------------+----------------------------------   Adj R-squared   =    0.0223
+       Total |  8.85057471        86  .102913659   Root MSE        =    .31721
+
+------------------------------------------------------------------------------
+REF_femqua~y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   OP_female |   .1221198   .0710124     1.72   0.089    -.0190719    .2633116
+       _cons |   .0714286   .0423892     1.69   0.096    -.0128526    .1557097
+------------------------------------------------------------------------------
+
+. local r25c3=_b[_cons];
+
+. local r25c4=_b[_cons]+_b[OP_female];
+
+. test OP_female;
+
+ ( 1)  OP_female = 0
+
+       F(  1,    85) =    2.96
+            Prob > F =    0.0891
+
+. local r25c5=r(p);
+
+. *n;
+. local r26c1="N";
+
+. count if OP_treatment_gender==3  & (OP_treatment_payment==3) & !missing(REF_qualify) & !missing(REF_female) & !missing(OP_female);
+  87
+
+. local r26c2=r(N);
+
+. count if OP_treatment_gender==3 & (OP_treatment_payment==3) & !missing(REF_qualify) & !missing(REF_female)  & OP_female==0;
+  56
+
+. local r26c3=r(N);
+
+. count if OP_treatment_gender==3 & (OP_treatment_payment==3) & !missing(REF_qualify) & !missing(REF_female)  & OP_female==1;
+  31
+
+. local r26c4=r(N);
+
+. local r26c5="";
+
+. ** Outsheet **;
+. preserve;
+
+. clear;
+
+. set obs 26;
+number of observations (_N) was 0, now 26
+
+. gen str c1="";
+(26 missing values generated)
+
+.  gen str c2="";
+(26 missing values generated)
+
+.  gen str c3="";
+(26 missing values generated)
+
+.  gen str c4="";
+(26 missing values generated)
+
+.  gen str c5="";
+(26 missing values generated)
+
+. forval r = 1/26 {;
+  2. forval c = 1/5 {;
+  3. replace c`c'="`r`r'c`c''" if _n==`r';
+  4. };
+  5. };
+variable c1 was str1 now str21
+(1 real change made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+variable c3 was str1 now str17
+(1 real change made)
+variable c4 was str1 now str17
+(1 real change made)
+(0 real changes made)
+(1 real change made)
+variable c2 was str1 now str17
+(1 real change made)
+(1 real change made)
+(1 real change made)
+variable c5 was str1 now str17
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+variable c1 was str21 now str47
+(1 real change made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+variable c1 was str47 now str53
+(1 real change made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+(1 real change made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+(1 real change made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(0 real changes made)
+
+. *rename (c1 c2 c3 c4 c5) (entity All_CAs Male_CAs Female_CAs p_value);
+. outsheet using "./tables/table1_gender_distributions_of_CAs_and_refferals.csv", comma replace;
+(note: file ./tables/table1_gender_distributions_of_CAs_and_refferals.csv not found)
+file ./tables/table1_gender_distributions_of_CAs_and_refferals.csv could not be opened
+r(603);
+
+end of do-file
+
+r(603);
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_31_08.log
+  log type:  text
+ closed on:   8 Oct 2020, 14:32:26
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

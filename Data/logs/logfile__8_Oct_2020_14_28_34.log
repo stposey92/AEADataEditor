@@ -1,0 +1,201 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_28_34.log
+  log type:  text
+ opened on:   8 Oct 2020, 14:28:34
+
+. 
+. /* It will provide some info about how and when the program was run */
+. /* See https://www.stata.com/manuals13/pcreturn.pdf#pcreturn */
+. local variant = cond(c(MP),"MP",cond(c(SE),"SE",c(flavor)) )  
+
+. // alternatively, you could use 
+. // local variant = cond(c(stata_version)>13,c(real_flavor),"NA")  
+. 
+. di "=== SYSTEM DIAGNOSTICS ==="
+=== SYSTEM DIAGNOSTICS ===
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 14.2
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Dec 2017
+
+. di "Variant:       `variant'"
+Variant:       SE
+
+. di "Processors:    `c(processors)'"
+Processors:    1
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. di "=========================="
+==========================
+
+. 
+. 
+. /* install any packages locally */
+. capture mkdir "$rootdir/ado"
+
+. sysdir set PERSONAL "$rootdir/ado/personal"
+
+. sysdir set PLUS     "$rootdir/ado/plus"
+
+. sysdir set SITE     "$rootdir/ado/site"
+
+. sysdir
+   STATA:  C:\Program Files (x86)\Stata14\
+    BASE:  C:\Program Files (x86)\Stata14\ado\base\
+    SITE:  C:\Users\Public\Replication\Replication\Data/ado/site\
+    PLUS:  C:\Users\Public\Replication\Replication\Data/ado/plus\
+PERSONAL:  C:\Users\Public\Replication\Replication\Data/ado/personal\
+OLDPLACE:  c:\ado\
+
+. 
+. /* add packages to the macro */
+. 
+. * *** Add required packages from SSC to this list ***
+.     local ssc_packages ""
+
+.     // local ssc_packages "estout boottest"
+.     
+.     if !missing("`ssc_packages'") {
+.         foreach pkg in `ssc_packages' {
+  2.             dis "Installing `pkg'"
+  3.             ssc install `pkg', replace
+  4.         }
+.     }
+
+. 
+.     * Install packages using net
+.     *  net install yaml, from("https://raw.githubusercontent.com/gslab-econ/stata-misc/master/")
+.     
+. /* other commands */
+. 
+. /* after installing all packages, it may be necessary to issue the mata mlib index command */
+.         mata: mata mlib index
+.mlib libraries to be searched are now
+    lmatabase;lmataado;lmatafc;lmatagsem;lmatamcmc;lmataopt;lmatapath;lmatapostest;lmatapss;lmatasem
+
+. 
+. 
+. set more off
+
+. 
+. clear
+
+. set mem 500m
+set memory ignored.
+    Memory no longer needs to be set in modern Statas; memory adjustments are performed on the fly automatically.
+
+. set more off
+
+. set matsize 800
+
+. 
+. #delimit;
+delimiter now ;
+. use Recruitment_ReplicationData.dta;
+
+. tab location, gen(l);
+
+   Location |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        641       77.60       77.60
+          2 |        185       22.40      100.00
+------------+-----------------------------------
+      Total |        826      100.00
+
+. gen lweek = l2*OP_week;
+
+. egen OP_age10 = cut(OP_agegrp), at(10 20 30 40 50);
+(61 missing values generated)
+
+. replace OP_age10 = 60 if OP_age10==.;
+(61 real changes made)
+
+. global controls= "i.OP_date";
+
+. bys OP_date: egen frac_female = mean(OP_female);
+
+. gen OP_bias = OP_male_ra_score-OP_female_ra_score;
+(88 missing values generated)
+
+. egen OP_bias_group = cut(OP_bias), at(-10 0 1 2 3 10) icodes;
+(88 missing values generated)
+
+. for var frac_female OP_bias OP_bias_group: gen perf_X = treat_perf*X;
+
+->  gen perf_frac_female = treat_perf*frac_female
+
+->  gen perf_OP_bias = treat_perf*OP_bias
+(88 missing values generated)
+
+->  gen perf_OP_bias_group = treat_perf*OP_bias_group
+(88 missing values generated)
+
+. eststo clear;
+command eststo is unrecognized
+r(199);
+
+end of do-file
+
+r(199);
+
+. do "C:\Users\sean posey\AppData\Local\Temp\STD01000000.tmp"
+
+.  * Do Job Networks Disadvantage Women? Evidence from a Recruitment Experiment in Malawi;
+.  /*Created: 10/10/2016 */
+.  /*Last edited: 12/22/2016*/
+. /* Template config.do */
+. /* Copy this file to your replication directory if using Stata, e.g.,
+>     cp template-config.do replication-(netid)/config.do
+> 
+>    or similar, and then add
+> 
+>    include "config.do"
+> 
+>    in the author's main Stata program
+> 
+>    */
+. 
+. /* adjust this as necessary. This works on all OS when running in batch mode, but may not work in interactive mode */
+. 
+. local pwd : pwd
+
+. global rootdir "`pwd'"
+
+. global logdir "./logs"
+
+. cap mkdir $logdir
+
+. 
+. /* check if the author creates a log file. If not, adjust the following code fragment */
+. 
+. local c_date = c(current_date)
+
+. local cdate = subinstr("`c_date'", " ", "_", .)
+
+. local c_time = c(current_time)
+
+. local ctime = subinstr("`c_time'", ":", "_", .)
+
+. 
+. log using "$logdir/logfile_`cdate'_`ctime'.log", replace text
+log file already open
+r(604);
+
+end of do-file
+
+r(604);
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_28_34.log
+  log type:  text
+ closed on:   8 Oct 2020, 14:28:54
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

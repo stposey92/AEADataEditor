@@ -67,7 +67,7 @@ sysdir
 
     * Install packages using net
     *  net install yaml, from("https://raw.githubusercontent.com/gslab-econ/stata-misc/master/")
-    
+net install estout, from( http://fmwww.bc.edu/RePEc/bocode/e/)
 /* other commands */
 
 /* after installing all packages, it may be necessary to issue the mata mlib index command */
@@ -80,6 +80,9 @@ clear
 set mem 500m
 set more off
 set matsize 800
+
+capture mkdir "./tables" // Create new Directories for the tables and graphs
+capture mkdir "./graphs"
 
 #delimit;
 use Recruitment_ReplicationData.dta;
@@ -494,7 +497,6 @@ noisily esttab OP_altqual1 REF_altqual1 REF_altqual2 OP_altqual2 REF_altqual3 RE
 	order(treat_rel treat_female treat_either reltreat_female reltreat_either) style(tab) varwidth(8) modelwidth(8) plain label replace;
 
 eststo clear;
-
 
 
 *********************************************************************************;

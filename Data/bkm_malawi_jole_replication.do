@@ -1,18 +1,7 @@
  * Do Job Networks Disadvantage Women? Evidence from a Recruitment Experiment in Malawi;
  /*Created: 10/10/2016 */
- /*Last edited: 12/22/2016*/
-/* Template config.do */
-/* Copy this file to your replication directory if using Stata, e.g.,
-    cp template-config.do replication-(netid)/config.do
-
-   or similar, and then add
-
-   include "config.do"
-
-   in the author's main Stata program
-
-   */
-
+ /*Last edited by author: 12/22/2016*/
+/* Minor edits by Sean Posey: 10/8/2020 */
 /* adjust this as necessary. This works on all OS when running in batch mode, but may not work in interactive mode */
 
 local pwd : pwd
@@ -67,7 +56,7 @@ sysdir
 
     * Install packages using net
     *  net install yaml, from("https://raw.githubusercontent.com/gslab-econ/stata-misc/master/")
-    
+net install estout, from( http://fmwww.bc.edu/RePEc/bocode/e/)
 /* other commands */
 
 /* after installing all packages, it may be necessary to issue the mata mlib index command */
@@ -80,6 +69,9 @@ clear
 set mem 500m
 set more off
 set matsize 800
+
+capture mkdir "./tables" // Create new Directories for the tables and graphs
+capture mkdir "./graphs"
 
 #delimit;
 use Recruitment_ReplicationData.dta;
@@ -496,21 +488,20 @@ noisily esttab OP_altqual1 REF_altqual1 REF_altqual2 OP_altqual2 REF_altqual3 RE
 eststo clear;
 
 
-
 *********************************************************************************;
 ******** Figures 1-7 *********;
 *********************************************************************************;
 
 twoway (kdensity OP_alt_nofeedback_score if OP_gender==1, lpattern(dash)) (kdensity OP_alt_nofeedback_score if OP_gender==2), legend(label (1 "Male CAs") label( 2 "Female CAs")) 
 	xtitle("CA's overall (corrected) score") ytitle("kernel density estimate") title(Figure 1: CA Ability by Gender) graphregion(fcolor(white)) legend(region(lwidth(none)));
-*graph save ./graphs/fig1_CA_ability_by_gender.gph, replace;
+graph save ./graphs/fig1_CA_ability_by_gender.png, replace;
 graph export "./graphs/fig1_CA_ability_by_gender.pdf", replace;
 
 twoway (lpoly REF_female OP_alt_nofeedback_score if OP_treatment_gender==3&OP_gender==1, lpattern(dash)) 
 	(lpoly REF_female OP_alt_nofeedback_score if OP_treatment_gender==3 & OP_gender==2), legend(label (1 "Referrals of Male CAs") 
 	label( 2 "Referrals of Female CAs")) xtitle("CA's overall (corrected) score") ytitle("Referral is Female") 
 	title("Figure 3: Gender choice in referrals, by CA performance") graphregion(fcolor(white)) legend(region(lwidth(none)));
-*graph save ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.gph, replace;
+graph save ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png, replace;
 graph export "./graphs/fig3_gender_choice_in_referrals_by_CA_performance.pdf", replace;
 
 
@@ -519,7 +510,7 @@ twoway (kdensity REF_alt_nofeedback_score if OP_treatment_gender==1&OP_gender==1
 	(kdensity REF_alt_nofeedback_score if OP_treatment_gender==2 & OP_gender==1 & treat_perf==0), legend(label (1 "Men who must refer men") 
 	label( 2 "Men who must refer women")) xtitle("Referral's overall (corrected) score") ytitle("Kernel density estimate") 
 	title(Figure 4: Men's Fixed Fee Referrals) graphregion(fcolor(white))legend(region(lwidth(none)));
-*graph save ./graphs/fig4_mens_fixedfee_referrals.gph, replace;
+graph save ./graphs/fig4_mens_fixedfee_referrals.png, replace;
 graph export "./graphs/fig4_mens_fixedfee_referrals.pdf", replace;
 ksmirnov REF_alt_overall_score if treat_either==0 & OP_gender==1, by(treat_female);
 
@@ -528,7 +519,7 @@ twoway (lpoly REF_alt_nofeedback_qual OP_alt_nofeedback_score if OP_treatment_ge
 	(lpoly REF_alt_nofeedback_qual OP_alt_nofeedback_score if OP_treatment_gender==3 & OP_gender==2), legend(label (1 "Referrals of Male CAs") 
 	label( 2 "Referrals of Female CAs")) xtitle("CA's overall (corrected) score") ytitle("Referral's qualification rate") 
 	title("Figure 6: Referral qualification rate, by CA performance") graphregion(fcolor(white)) legend(region(lwidth(none)));
-*graph save ./graphs/fig6_referral_qualification_rate_by_CA_performance.gph, replace;
+graph save ./graphs/fig6_referral_qualification_rate_by_CA_performance.png, replace;
 graph export "./graphs/fig6_referral_qualification_rate_by_CA_performance.pdf", replace;
 
 
@@ -539,7 +530,7 @@ twoway (kdensity REF_alt_nofeedback_score if OP_treatment_gender==1&OP_gender==2
 	(kdensity REF_alt_nofeedback_score if OP_treatment_gender==2 & OP_gender==2 & treat_perf==0), legend(label (1 "Women who must refer men") 
 	label( 2 "Women who must refer women")) xtitle("Referral's overall (corrected) score") ytitle("Kernel density estimate") 
 	title(Figure 7: Women's Fixed Fee Referrals) graphregion(fcolor(white)) legend(region(lwidth(none)));
-*graph save ./graphs/fig7_womens_fixedfee_referrals.gph, replace;
+graph save ./graphs/fig7_womens_fixedfee_referrals.png, replace;
 graph export "./graphs/fig7_womens_fixedfee_referrals.pdf", replace;
 
 
@@ -618,11 +609,11 @@ bys trials_in_tc: egen OP_males_all= count(OP_alt_nofeedback_qual) if OP_female=
 bys trials_in_tc: egen OP_females_all= count(OP_alt_nofeedback_qual) if OP_female==1;
 
 twoway (scatter mean_OP_gend trials_in_tc if tc==2 [w= num_OP_obs], mfcolor(bg) msymbol(Oh) xtitle("Session") ytitle("Percent Female") title("Fig A1: Fraction women among CAs over time")) (scatter mean_OP_gend trials_in_tc if tc==3 [w= num_OP_obs], mfcolor(bg)  msymbol(Dh)) (scatter mean_OP_gend trials_in_tc if tc==4 [w= num_OP_obs], mfcolor(bg) msymbol(Sh)), legend(label(1 "Lilongwe Center 1") label(2 "Lilongwe Center 2") label(3 "Blantyre"));
-*graph save ./graphs/figA1_gender_bysession.gph, replace;
+graph save ./graphs/figA1_gender_bysession.png, replace;
 graph export "./graphs/figA1_gender_bysession.pdf", replace;
 
 twoway  (scatter OP_male_qualrate trials_in_tc [w=OP_males_all], msymbol(Oh) xtitle("Session") ytitle("Qualification rate") title("Fig A2: CA qualification rate over time"))  (scatter OP_female_qualrate trials_in_tc [w=OP_females_all], msymbol(Dh)), legend(label(1 "Male CAs") label(2 "Female CAs"));
-*graph save ./graphs/figA2_performance_bysession.gph, replace;
+graph save ./graphs/figA2_performance_bysession.png, replace;
 graph export "./graphs/figA2_performance_bysession.pdf", replace;
 *********************************************************************************;
 *** Appendix Figure A3: Referral Qualifies, By Female CA performance ***;
@@ -634,7 +625,7 @@ twoway (lpoly REF_alt_nofeedback_qual OP_alt_nofeedback_score if OP_gender==2&tr
 	label( 2 "Women who must refer men," "fixed fees") label(3 "Women who must refer women," "performance pay") label( 4 "Women who must refer men," "performance pay"))   xtitle("CA's overall (corrected) score") 
 	ytitle("Referral qualifies")title("Figure A3: Referral Qualifies, by Female CA performance") 
 	graphregion(fcolor(white)) legend(region(lwidth(none)));
-*graph save ./graphs/figA3_referral_qualifies_by_female_CA_performance.gph, replace;
+graph save ./graphs/figA3_referral_qualifies_by_female_CA_performance.png, replace;
 graph export "./graphs/figA3_referral_qualifies_by_female_CA_performance.pdf", replace;
 
 

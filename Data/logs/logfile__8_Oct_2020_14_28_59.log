@@ -1,0 +1,105 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_28_59.log
+  log type:  text
+ opened on:   8 Oct 2020, 14:28:59
+
+. 
+. /* It will provide some info about how and when the program was run */
+. /* See https://www.stata.com/manuals13/pcreturn.pdf#pcreturn */
+. local variant = cond(c(MP),"MP",cond(c(SE),"SE",c(flavor)) )  
+
+. // alternatively, you could use 
+. // local variant = cond(c(stata_version)>13,c(real_flavor),"NA")  
+. 
+. di "=== SYSTEM DIAGNOSTICS ==="
+=== SYSTEM DIAGNOSTICS ===
+
+. di "Stata version: `c(stata_version)'"
+Stata version: 14.2
+
+. di "Updated as of: `c(born_date)'"
+Updated as of: 19 Dec 2017
+
+. di "Variant:       `variant'"
+Variant:       SE
+
+. di "Processors:    `c(processors)'"
+Processors:    1
+
+. di "OS:            `c(os)' `c(osdtl)'"
+OS:            Windows 64-bit
+
+. di "Machine type:  `c(machine_type)'"
+Machine type:  PC (64-bit x86-64)
+
+. di "=========================="
+==========================
+
+. 
+. 
+. /* install any packages locally */
+. capture mkdir "$rootdir/ado"
+
+. sysdir set PERSONAL "$rootdir/ado/personal"
+
+. sysdir set PLUS     "$rootdir/ado/plus"
+
+. sysdir set SITE     "$rootdir/ado/site"
+
+. sysdir
+   STATA:  C:\Program Files (x86)\Stata14\
+    BASE:  C:\Program Files (x86)\Stata14\ado\base\
+    SITE:  C:\Users\Public\Replication\Replication\Data/ado/site\
+    PLUS:  C:\Users\Public\Replication\Replication\Data/ado/plus\
+PERSONAL:  C:\Users\Public\Replication\Replication\Data/ado/personal\
+OLDPLACE:  c:\ado\
+
+. 
+. /* add packages to the macro */
+. 
+. * *** Add required packages from SSC to this list ***
+.     local ssc_packages ""
+
+.     // local ssc_packages "estout boottest"
+.     
+.     if !missing("`ssc_packages'") {
+.         foreach pkg in `ssc_packages' {
+  2.             dis "Installing `pkg'"
+  3.             ssc install `pkg', replace
+  4.         }
+.     }
+
+. 
+.     * Install packages using net
+.     *  net install yaml, from("https://raw.githubusercontent.com/gslab-econ/stata-misc/master/")
+. net install estout 
+file http://www.stata.com/estout.pkg not found
+could not load estout.pkg from http://www.stata.com/
+r(601);
+
+end of do-file
+
+r(601);
+
+. help eststo
+
+. do "C:\Users\sean posey\AppData\Local\Temp\STD01000000.tmp"
+
+. net install estout 
+checking estout consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+end of do-file
+
+. help net
+
+. help install
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_14_28_59.log
+  log type:  text
+ closed on:   8 Oct 2020, 14:30:58
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
