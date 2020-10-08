@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_16_21_37.log
+       log:  C:\Users\Public\Replication\Replication\Data\logs/logfile__8_Oct_2020_17_10_25.log
   log type:  text
- opened on:   8 Oct 2020, 16:21:37
+ opened on:   8 Oct 2020, 17:10:25
 
 . 
 . /* It will provide some info about how and when the program was run */
@@ -1083,7 +1083,6 @@ variable c1 was str47 now str53
 
 . *rename (c1 c2 c3 c4 c5) (entity All_CAs Male_CAs Female_CAs p_value);
 . outsheet using "./tables/table1_gender_distributions_of_CAs_and_refferals.csv", comma replace;
-(note: file ./tables/table1_gender_distributions_of_CAs_and_refferals.csv not found)
 
 . restore;
 
@@ -1298,7 +1297,6 @@ perftreat_either |  -.2873423   .1253797    -2.29   0.022    -.5338167   -.04086
 >   cells(b(star fmt(%9.6f)) se(fmt(%9.6f))) starlevel(* .1 ** .05 *** .01) 
 >         stardetach stats(N mean, fmt(%9.3g))  keep(treat_female treat_either treat_perf perftreat_female perftreat_either )
 >         order( treat_female treat_either treat_perf perftreat_female perftreat_either ) style(tab) varwidth(8) modelwidth(8) plain label replace;
-(note: file ./tables/table2_male_CAs_referral_choices.csv not found)
 (output written to ./tables/table2_male_CAs_referral_choices.csv)
 
 . eststo clear;
@@ -1687,7 +1685,6 @@ REF_survey~e |        425    .2352941    .4246824          0          1
 >   cells(b(star fmt(%9.6f)) se(fmt(%9.6f))) starlevel(* .1 ** .05 *** .01) 
 >         stardetach stats(mean sd N, fmt(%9.3g))  keep(treat_female treat_perf perftreat_female treat_either perftreat_either )
 >         order(treat_female treat_either treat_perf perftreat_female perftreat_either ) style(tab) varwidth(8) modelwidth(8) plain label replace;
-(note: file ./tables/table3_screening_of_male_CAs_on_different_characteristics.csv not found)
 (output written to ./tables/table3_screening_of_male_CAs_on_different_characteristics.csv)
 
 . eststo clear;
@@ -1905,7 +1902,6 @@ perftreat_either |   .0711584   .1615497     0.44   0.660    -.2471408    .38945
 >   cells(b(star fmt(%9.6f)) se(fmt(%9.6f))) starlevel(* .1 ** .05 *** .01) 
 >         stardetach stats(N mean , fmt(%9.3g))  keep(treat_female treat_either treat_perf perftreat_female perftreat_either )
 >         order(treat_female treat_either treat_perf perftreat_female perftreat_either ) style(tab) varwidth(8) modelwidth(8) plain label replace;
-(note: file ./tables/table4_female_CAs_referral_choices.csv not found)
 (output written to ./tables/table4_female_CAs_referral_choices.csv)
 
 . eststo clear;
@@ -2294,7 +2290,6 @@ REF_survey~e |        253    .1936759    .3959612          0          1
 >   cells(b(star fmt(%9.6f)) se(fmt(%9.6f))) starlevel(* .1 ** .05 *** .01) 
 >         stardetach stats(mean sd N, fmt(%9.3g)) keep(treat_female treat_perf perftreat_female treat_either perftreat_either )
 >         order(treat_female treat_either treat_perf perftreat_female perftreat_either ) style(tab) varwidth(8) modelwidth(8) plain label replace;
-(note: file ./tables/table5_screening_of_female_CAs_on_different_characteristics.csv not found)
 (output written to ./tables/table5_screening_of_female_CAs_on_different_characteristics.csv)
 
 .                 *********************************************************************************;
@@ -2556,7 +2551,6 @@ _IOP_date_18851 |          0  (omitted)
 >   cells(b(star fmt(%9.6f)) se(fmt(%9.6f))) starlevel(* .1 ** .05 *** .01) 
 >         stardetach keep(treat_rel treat_female treat_either reltreat_female reltreat_either)
 >         order(treat_rel treat_female treat_either reltreat_female reltreat_either) style(tab) varwidth(8) modelwidth(8) plain label replace;
-(note: file ./tables/table6_competition_incentives_in_the_fixed_fee_treatments.csv not found)
 (output written to ./tables/table6_competition_incentives_in_the_fixed_fee_treatments.csv)
 
 . eststo clear;
@@ -2567,9 +2561,8 @@ _IOP_date_18851 |          0  (omitted)
 . twoway (kdensity OP_alt_nofeedback_score if OP_gender==1, lpattern(dash)) (kdensity OP_alt_nofeedback_score if OP_gender==2), legend(label (1 "Male CAs") label( 2 "Female CAs")) 
 >         xtitle("CA's overall (corrected) score") ytitle("kernel density estimate") title(Figure 1: CA Ability by Gender) graphregion(fcolor(white)) legend(region(lwidth(none)));
 
-. graph save ./graphs/fig1_CA_ability_by_gender.png, replace;
-(note: file ./graphs/fig1_CA_ability_by_gender.png not found)
-(file ./graphs/fig1_CA_ability_by_gender.png saved)
+. graph export ./graphs/fig1_CA_ability_by_gender.png, replace;
+(file ./graphs/fig1_CA_ability_by_gender.png written in PNG format)
 
 . graph export "./graphs/fig1_CA_ability_by_gender.pdf", replace;
 (file ./graphs/fig1_CA_ability_by_gender.pdf written in PDF format)
@@ -2579,9 +2572,8 @@ _IOP_date_18851 |          0  (omitted)
 >         label( 2 "Referrals of Female CAs")) xtitle("CA's overall (corrected) score") ytitle("Referral is Female") 
 >         title("Figure 3: Gender choice in referrals, by CA performance") graphregion(fcolor(white)) legend(region(lwidth(none)));
 
-. graph save ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png, replace;
-(note: file ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png not found)
-(file ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png saved)
+. graph export ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png, replace;
+(file ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.png written in PNG format)
 
 . graph export "./graphs/fig3_gender_choice_in_referrals_by_CA_performance.pdf", replace;
 (file ./graphs/fig3_gender_choice_in_referrals_by_CA_performance.pdf written in PDF format)
@@ -2591,9 +2583,8 @@ _IOP_date_18851 |          0  (omitted)
 >         label( 2 "Men who must refer women")) xtitle("Referral's overall (corrected) score") ytitle("Kernel density estimate") 
 >         title(Figure 4: Men's Fixed Fee Referrals) graphregion(fcolor(white))legend(region(lwidth(none)));
 
-. graph save ./graphs/fig4_mens_fixedfee_referrals.png, replace;
-(note: file ./graphs/fig4_mens_fixedfee_referrals.png not found)
-(file ./graphs/fig4_mens_fixedfee_referrals.png saved)
+. graph export ./graphs/fig4_mens_fixedfee_referrals.png, replace;
+(file ./graphs/fig4_mens_fixedfee_referrals.png written in PNG format)
 
 . graph export "./graphs/fig4_mens_fixedfee_referrals.pdf", replace;
 (file ./graphs/fig4_mens_fixedfee_referrals.pdf written in PDF format)
@@ -2613,9 +2604,8 @@ Two-sample Kolmogorov-Smirnov test for equality of distribution functions
 >         label( 2 "Referrals of Female CAs")) xtitle("CA's overall (corrected) score") ytitle("Referral's qualification rate") 
 >         title("Figure 6: Referral qualification rate, by CA performance") graphregion(fcolor(white)) legend(region(lwidth(none)));
 
-. graph save ./graphs/fig6_referral_qualification_rate_by_CA_performance.png, replace;
-(note: file ./graphs/fig6_referral_qualification_rate_by_CA_performance.png not found)
-(file ./graphs/fig6_referral_qualification_rate_by_CA_performance.png saved)
+. graph export ./graphs/fig6_referral_qualification_rate_by_CA_performance.png, replace;
+(file ./graphs/fig6_referral_qualification_rate_by_CA_performance.png written in PNG format)
 
 . graph export "./graphs/fig6_referral_qualification_rate_by_CA_performance.pdf", replace;
 (file ./graphs/fig6_referral_qualification_rate_by_CA_performance.pdf written in PDF format)
@@ -2625,9 +2615,8 @@ Two-sample Kolmogorov-Smirnov test for equality of distribution functions
 >         label( 2 "Women who must refer women")) xtitle("Referral's overall (corrected) score") ytitle("Kernel density estimate") 
 >         title(Figure 7: Women's Fixed Fee Referrals) graphregion(fcolor(white)) legend(region(lwidth(none)));
 
-. graph save ./graphs/fig7_womens_fixedfee_referrals.png, replace;
-(note: file ./graphs/fig7_womens_fixedfee_referrals.png not found)
-(file ./graphs/fig7_womens_fixedfee_referrals.png saved)
+. graph export ./graphs/fig7_womens_fixedfee_referrals.png, replace;
+(file ./graphs/fig7_womens_fixedfee_referrals.png written in PNG format)
 
 . graph export "./graphs/fig7_womens_fixedfee_referrals.pdf", replace;
 (file ./graphs/fig7_womens_fixedfee_referrals.pdf written in PDF format)
@@ -4309,7 +4298,6 @@ OP_feedbac~s |        306    27.96732    6.206732          0         41
 (734 observations deleted)
 
 . outsheet using `outfilename', comma replace;
-(note: file ./tables/table_a1_summary_statistics_and_randomization_check.csv not found)
 
 . restore;
 
@@ -4343,9 +4331,8 @@ OP_feedbac~s |        306    27.96732    6.206732          0         41
 (analytic weights assumed)
 (analytic weights assumed)
 
-. graph save ./graphs/figA1_gender_bysession.png, replace;
-(note: file ./graphs/figA1_gender_bysession.png not found)
-(file ./graphs/figA1_gender_bysession.png saved)
+. graph export ./graphs/figA1_gender_bysession.png, replace;
+(file ./graphs/figA1_gender_bysession.png written in PNG format)
 
 . graph export "./graphs/figA1_gender_bysession.pdf", replace;
 (file ./graphs/figA1_gender_bysession.pdf written in PDF format)
@@ -4359,9 +4346,8 @@ OP_feedbac~s |        306    27.96732    6.206732          0         41
 (analytic weights assumed)
 (analytic weights assumed)
 
-. graph save ./graphs/figA2_performance_bysession.png, replace;
-(note: file ./graphs/figA2_performance_bysession.png not found)
-(file ./graphs/figA2_performance_bysession.png saved)
+. graph export ./graphs/figA2_performance_bysession.png, replace;
+(file ./graphs/figA2_performance_bysession.png written in PNG format)
 
 . graph export "./graphs/figA2_performance_bysession.pdf", replace;
 (file ./graphs/figA2_performance_bysession.pdf written in PDF format)
@@ -4379,9 +4365,8 @@ OP_feedbac~s |        306    27.96732    6.206732          0         41
 >         ytitle("Referral qualifies")title("Figure A3: Referral Qualifies, by Female CA performance") 
 >         graphregion(fcolor(white)) legend(region(lwidth(none)));
 
-. graph save ./graphs/figA3_referral_qualifies_by_female_CA_performance.png, replace;
-(note: file ./graphs/figA3_referral_qualifies_by_female_CA_performance.png not found)
-(file ./graphs/figA3_referral_qualifies_by_female_CA_performance.png saved)
+. graph export ./graphs/figA3_referral_qualifies_by_female_CA_performance.png, replace;
+(file ./graphs/figA3_referral_qualifies_by_female_CA_performance.png written in PNG format)
 
 . graph export "./graphs/figA3_referral_qualifies_by_female_CA_performance.pdf", replace;
 (file ./graphs/figA3_referral_qualifies_by_female_CA_performance.pdf written in PDF format)
@@ -4406,4 +4391,3 @@ Two-sample Kolmogorov-Smirnov test for equality of distribution functions
 
 end of do-file
 
-. exit, clear
