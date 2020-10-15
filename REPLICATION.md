@@ -98,7 +98,7 @@ Replication steps
 
 
 
-1. Download the following data and data analysis files. [Data](Recruitment_ReplicationData) [Data Analysis File](bkm_malawi_jole_replication)
+1. Download the following data and data analysis files. [Data](Data/Recruitment_ReplicationData) [Data Analysis File](Data/bkm_malawi_jole_replication)
 2. Download the data and do file in the same directory and run the do file to replicate the study.
 3. I added a config.do to track log files for the replication
 4. I added code that makes directories in the same directory for the outputs of graphs and tables
