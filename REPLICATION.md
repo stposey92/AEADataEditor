@@ -14,7 +14,7 @@ Data description
 
 This experiment was an RCT and all data were collected primarily from the authors and IPA. 
 [All data was made publicly availabe by the authors here](https://www.journals.uchicago.edu/doi/suppl/10.1086/693869)
-[There is also a file in the repository](Recruitment_ReplicationData.dta)
+[There is also a file in the repository](Data/Recruitment_ReplicationData.dta)
 
 #### Example data
 
